@@ -6,3 +6,10 @@ const hello = "hello world";
 */
 
 console.log(hello);
+
+function test() {
+  console.log("test");
+}
+
+let num = 1.111;
+let str = "string";

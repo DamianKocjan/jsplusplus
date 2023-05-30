@@ -1,131 +1,35 @@
-#[derive(Debug, PartialEq)]
+use crate::parser::token::TokenType;
+use once_cell::sync::Lazy;
+use std::collections::HashMap;
+use std::sync::Mutex;
+
+#[derive(Clone, Debug, PartialEq)]
 pub enum Keyword {
-    ABSTRACT,
-    BREAK,
-    CASE,
-    CATCH,
-    CLASS,
-    CONST,
-    CONTINUE,
-    DEFAULT,
-    DELETE,
-    DO,
-    ELSE,
-    EXPORT,
-    EXTENDS,
-    EVAL,
-    FALSE,
-    FINALLY,
-    FOR,
-    FUNCTION,
-    GOTO, // kinda wrong idea to have this in JS
-    IF,
-    IMPLEMENTS,
-    IMPORT,
-    IN,
-    INSTANCEOF,
-    INTERFACE,
-    LET,
-    NEW,
-    NULL,
-    PRIVATE,
-    PROTECTED,
-    PUBLIC,
-    RETURN,
-    STATIC,
-    SUPER,
-    SWITCH,
-    THIS,
-    THROW,
-    TRUE,
-    TRY,
-    TYPEOF,
-    WHILE,
-    WITH,
-    YIELD, // generators won't be supported. Same as GOTO
-
-    // Textual keywords
-    SPACE,
-    EOF,
-    IDENTIFIER(String),
-    STRING(String),
-    NUMBER(f64),
-    REGEX(String),
-
-    // Punctuators
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
-    LBRACKET,
-    RBRACKET,
-    DOT,
-    SEMICOLON,
-    COMMA,
-    LT,
-    GT,
-    LE,
-    GE,
-    EQ,
-    NE,
-    EQEQ,
-    NEQ,
-    PLUS,
-    MINUS,
-    STAR,
-    SLASH,
-    PERCENT,
-
-    // Assignment operators
-    ASSIGN,
-    PLUSEQ,
-    MINUSEQ,
-    STAREQ,
-    SLASHEQ,
-    PERCENTEQ,
-
-    // Logical operators
-    AND,
-    OR,
-    NOT,
-    ANDAND,
-    OROR,
-
-    // Bitwise operators
-    BITAND,
-    BITOR,
-    BITXOR,
-    BITNOT,
-    LSHIFT,
-    RSHIFT,
-    URSHIFT,
-
-    // Increment/decrement operators
-    INCREMENT,
-    DECREMENT,
-
-    // Other operators
-    QUESTION,
-    COLON,
-    TILDE,
-    AT,
-    HASH,
-    DOLLAR,
-    CARET,
-    AMPERSAND,
-    UNDERSCORE,
-    BACKTICK,
-    PIPE,
-    BACKSLASH,
-    SINGLEQUOTE,
-    DOUBLEQUOTE,
-    BACKQUOTE,
-    PLUSPLUS,
-    MINUSMINUS,
-    DOTDOTDOT,
-
-    // Other
+    // Comments
     COMMENT,
-    BLOCK_COMMENT,
-    ERROR(String),
+    BlockComment,
 }
+
+pub static KEYWORDS: Lazy<Mutex<HashMap<&str, TokenType>>> = Lazy::new(|| {
+    let mut m: HashMap<&str, TokenType> = HashMap::new();
+
+    m.insert("and", TokenType::And);
+    m.insert("class", TokenType::Class);
+    m.insert("const", TokenType::Const);
+    m.insert("else", TokenType::Else);
+    m.insert("false", TokenType::False);
+    m.insert("for", TokenType::For);
+    m.insert("function", TokenType::Function);
+    m.insert("if", TokenType::If);
+    m.insert("import", TokenType::Import);
+    m.insert("let", TokenType::Let);
+    m.insert("nil", TokenType::Nil);
+    m.insert("or", TokenType::Or);
+    m.insert("print", TokenType::Print);
+    m.insert("return", TokenType::Return);
+    m.insert("super", TokenType::Super);
+    m.insert("this", TokenType::This);
+    m.insert("true", TokenType::True);
+    m.insert("while", TokenType::While);
+    Mutex::new(m)
+});

@@ -1,15 +1,13 @@
-mod lexer;
-mod parser;
-mod syntax;
+use std::path::PathBuf;
+
+use jsplusplus::JSPlusPlus;
 
 fn main() {
-    let result = parser::parse("F:/projects/js++/test.js");
+    let path = PathBuf::from("F:/projects/js++/test.js");
 
-    if result.is_ok() {
-        println!("Success!");
-    } else {
-        println!("Error: {}", result.err().unwrap());
+    let jsplusplus = JSPlusPlus::new();
+
+    if let Err(e) = jsplusplus.run_file(path) {
+        println!("Error: {}", e);
     }
-
-    println!("Hello, world!");
 }
