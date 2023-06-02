@@ -1,5 +1,9 @@
 use anyhow::Result;
-use parser::scanner::Scanner;
+use parser::{
+    scanner::Scanner,
+    token::{Token, TokenType},
+    Parser,
+};
 use std::{fs::File, io::Read, path::PathBuf};
 
 mod ast;
@@ -14,11 +18,19 @@ impl JSPlusPlus {
         JSPlusPlus { had_error: false }
     }
 
-    pub fn error(&self, line: usize, message: &str) {
-        self.report(line, "", message);
+    pub fn error(line: usize, message: &str) {
+        JSPlusPlus::report(line, "", message);
     }
 
-    fn report(&self, line: usize, location: &str, message: &str) {
+    pub fn error_token(token: &Token, message: &str) {
+        if token.token_type == TokenType::EOF {
+            JSPlusPlus::report(token.line, " at end", message);
+        } else {
+            JSPlusPlus::report(token.line, &format!(" at '{}'", token.lexeme), message);
+        }
+    }
+
+    fn report(line: usize, location: &str, message: &str) {
         println!("[line {}] Error {}: {}", line, location, message);
     }
 
@@ -28,6 +40,13 @@ impl JSPlusPlus {
 
         for token in tokens {
             println!("{}", token.to_string());
+        }
+
+        let mut parser = Parser::new(tokens.clone());
+        let stmts = parser.parse();
+
+        for stmt in stmts {
+            println!("{:?}", stmt);
         }
     }
 

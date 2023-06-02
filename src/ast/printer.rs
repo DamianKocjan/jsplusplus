@@ -436,12 +436,12 @@ impl StatementVisitor<String> for AstPrinter {
         }
     }
 
-    fn visit_var_statement(&mut self, stmt: &Statement) -> String {
+    fn visit_let_statement(&mut self, stmt: &Statement) -> String {
         match stmt {
-            Statement::Var { name, initializer } => {
+            Statement::Let { name, initializer } => {
                 if initializer.is_some() {
                     return self.parenthesize2(
-                        "var",
+                        "let",
                         &[
                             Box::new(Into::<OneOf>::into(name.to_owned())),
                             Box::new(Into::<OneOf>::into(String::from("="))),
@@ -451,10 +451,33 @@ impl StatementVisitor<String> for AstPrinter {
                         ],
                     );
                 }
-                return format!("(var {})", name.lexeme);
+                return format!("(let {})", name.lexeme);
             }
             _ => {
-                panic!("Expected var statement");
+                panic!("Expected let statement");
+            }
+        }
+    }
+
+    fn visit_const_statement(&mut self, stmt: &Statement) -> String {
+        match stmt {
+            Statement::Const { name, initializer } => {
+                if initializer.is_some() {
+                    return self.parenthesize2(
+                        "const",
+                        &[
+                            Box::new(Into::<OneOf>::into(name.to_owned())),
+                            Box::new(Into::<OneOf>::into(String::from("="))),
+                            Box::new(Into::<OneOf>::into(
+                                initializer.as_ref().unwrap().to_owned(),
+                            )),
+                        ],
+                    );
+                }
+                return format!("(const {})", name.lexeme);
+            }
+            _ => {
+                panic!("Expected const statement");
             }
         }
     }

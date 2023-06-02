@@ -1,7 +1,7 @@
 use super::expression::Expression;
 use super::token::Token;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Statement {
     Block {
         statements: Vec<Statement>,
@@ -32,7 +32,11 @@ pub enum Statement {
         keyword: Token,
         value: Option<Expression>,
     },
-    Var {
+    Let {
+        name: Token,
+        initializer: Option<Expression>,
+    },
+    Const {
         name: Token,
         initializer: Option<Expression>,
     },
@@ -50,30 +54,48 @@ pub trait Visitor<T> {
     fn visit_if_statement(&mut self, statement: &Statement) -> T;
     fn visit_print_statement(&mut self, statement: &Statement) -> T;
     fn visit_return_statement(&mut self, statement: &Statement) -> T;
-    fn visit_var_statement(&mut self, statement: &Statement) -> T;
+    fn visit_let_statement(&mut self, statement: &Statement) -> T;
+    fn visit_const_statement(&mut self, statement: &Statement) -> T;
     fn visit_while_statement(&mut self, statement: &Statement) -> T;
 }
 
 impl Statement {
     pub fn accept<T>(&self, visitor: &mut impl Visitor<T>) -> T {
         match self {
-            Statement::Block { statements } => visitor.visit_block_statement(self),
+            Statement::Block { statements: _ } => visitor.visit_block_statement(self),
             Statement::Class {
-                name,
-                superclass,
-                methods,
+                name: _,
+                superclass: _,
+                methods: _,
             } => visitor.visit_class_statement(self),
-            Statement::Expression { expression } => visitor.visit_expression_statement(self),
-            Statement::Function { name, params, body } => visitor.visit_function_statement(self),
+            Statement::Expression { expression: _ } => visitor.visit_expression_statement(self),
+            Statement::Function {
+                name: _,
+                params: _,
+                body: _,
+            } => visitor.visit_function_statement(self),
             Statement::If {
-                condition,
-                then_branch,
-                else_branch,
+                condition: _,
+                then_branch: _,
+                else_branch: _,
             } => visitor.visit_if_statement(self),
-            Statement::Print { expression } => visitor.visit_print_statement(self),
-            Statement::Return { keyword, value } => visitor.visit_return_statement(self),
-            Statement::Var { name, initializer } => visitor.visit_var_statement(self),
-            Statement::While { condition, body } => visitor.visit_while_statement(self),
+            Statement::Print { expression: _ } => visitor.visit_print_statement(self),
+            Statement::Return {
+                keyword: _,
+                value: _,
+            } => visitor.visit_return_statement(self),
+            Statement::Let {
+                name: _,
+                initializer: _,
+            } => visitor.visit_let_statement(self),
+            Statement::Const {
+                name: _,
+                initializer: _,
+            } => visitor.visit_const_statement(self),
+            Statement::While {
+                condition: _,
+                body: _,
+            } => visitor.visit_while_statement(self),
         }
     }
 }

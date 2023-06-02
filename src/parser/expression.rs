@@ -1,6 +1,33 @@
+use std::collections::HashMap;
+
 use super::token::Token;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
+pub enum Literal {
+    Nil,
+    Bool(bool),
+    Number(f64),
+    String(String),
+    Map(HashMap<String, String>),
+}
+
+impl Literal {
+    pub fn to_string(&self) -> String {
+        match self {
+            Literal::Nil => "nil".to_string(),
+            Literal::Bool(value) => value.to_string(),
+            Literal::Number(value) => value.to_string(),
+            Literal::String(value) => value.to_string(),
+            Literal::Map(value) => value
+                .into_iter()
+                .map(|(k, v)| format!("{}: {}", k, v))
+                .collect::<Vec<String>>()
+                .join(", "),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum Expression {
     Assign {
         name: Token,
@@ -24,7 +51,7 @@ pub enum Expression {
         expression: Box<Expression>,
     },
     Literal {
-        value: Option<Token>,
+        value: Option<Literal>,
     },
     Logical {
         left: Box<Expression>,
