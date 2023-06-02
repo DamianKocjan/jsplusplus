@@ -1,14 +1,10 @@
 // test file for custom compiler
 const hello = "hello world";
 
-/*
-  block comment
-*/
-
-console.log(hello);
+print(hello);
 
 function test() {
-  console.log("test");
+  print("test");
 }
 
 let num = 1.111;

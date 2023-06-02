@@ -7,6 +7,7 @@ use parser::{
 use std::{fs::File, io::Read, path::PathBuf};
 
 mod ast;
+mod interpreter;
 mod parser;
 
 pub struct JSPlusPlus {
