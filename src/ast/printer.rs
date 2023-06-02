@@ -52,14 +52,14 @@ impl From<String> for OneOf {
     }
 }
 
-struct AstPrinter;
+pub struct AstPrinter;
 
 impl AstPrinter {
-    fn print_expression(&mut self, expression: &Expression) -> String {
+    pub fn print_expression(&mut self, expression: &Expression) -> String {
         return expression.accept(self);
     }
 
-    fn print_statement(&mut self, statement: &Statement) -> String {
+    pub fn print_statement(&mut self, statement: &Statement) -> String {
         return statement.accept(self);
     }
 

@@ -25,6 +25,10 @@ impl Parser {
         Parser { tokens, current: 0 }
     }
 
+    pub fn parse_expression(&mut self) -> Result<Expression> {
+        self.expression()
+    }
+
     pub fn parse(&mut self) -> Vec<Statement> {
         let mut statements = Vec::new();
         while !self.is_at_end() {

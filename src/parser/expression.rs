@@ -97,34 +97,40 @@ pub trait Visitor<T> {
 impl Expression {
     pub fn accept<T>(&self, visitor: &mut impl Visitor<T>) -> T {
         match self {
-            Expression::Assign { name, value } => visitor.visit_assign_expression(self),
+            Expression::Assign { name: _, value: _ } => visitor.visit_assign_expression(self),
             Expression::Binary {
-                left,
-                operator,
-                right,
+                left: _,
+                operator: _,
+                right: _,
             } => visitor.visit_binary_expression(self),
             Expression::Call {
-                callee,
-                paren,
-                arguments,
+                callee: _,
+                paren: _,
+                arguments: _,
             } => visitor.visit_call_expression(self),
-            Expression::Get { object, name } => visitor.visit_get_expression(self),
-            Expression::Grouping { expression } => visitor.visit_grouping_expression(self),
-            Expression::Literal { value } => visitor.visit_literal_expression(self),
+            Expression::Get { object: _, name: _ } => visitor.visit_get_expression(self),
+            Expression::Grouping { expression: _ } => visitor.visit_grouping_expression(self),
+            Expression::Literal { value: _ } => visitor.visit_literal_expression(self),
             Expression::Logical {
-                left,
-                operator,
-                right,
+                left: _,
+                operator: _,
+                right: _,
             } => visitor.visit_logical_expression(self),
             Expression::Set {
-                object,
-                name,
-                value,
+                object: _,
+                name: _,
+                value: _,
             } => visitor.visit_set_expression(self),
-            Expression::Super { keyword, method } => visitor.visit_super_expression(self),
-            Expression::This { keyword } => visitor.visit_this_expression(self),
-            Expression::Unary { operator, right } => visitor.visit_unary_expression(self),
-            Expression::Variable { name } => visitor.visit_variable_expression(self),
+            Expression::Super {
+                keyword: _,
+                method: _,
+            } => visitor.visit_super_expression(self),
+            Expression::This { keyword: _ } => visitor.visit_this_expression(self),
+            Expression::Unary {
+                operator: _,
+                right: _,
+            } => visitor.visit_unary_expression(self),
+            Expression::Variable { name: _ } => visitor.visit_variable_expression(self),
         }
     }
 }

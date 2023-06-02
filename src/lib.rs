@@ -47,6 +47,7 @@ impl JSPlusPlus {
 
         for stmt in stmts {
             println!("{:?}", stmt);
+            // println!("{}", ast::printer::AstPrinter.print_statement(&stmt));
         }
     }
 
