@@ -9,7 +9,6 @@ use anyhow::{bail, Result};
 
 mod environment;
 pub mod expression;
-mod io;
 mod keyword;
 mod resolver;
 pub mod scanner;
