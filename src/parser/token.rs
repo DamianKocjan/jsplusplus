@@ -32,7 +32,6 @@ pub enum TokenType {
 
     // Keywords.
     And,
-    Class,
     Const,
     Else,
     False,
@@ -45,8 +44,6 @@ pub enum TokenType {
     Or,
     Print,
     Return,
-    Super,
-    This,
     True,
     While,
 

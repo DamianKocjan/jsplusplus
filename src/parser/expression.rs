@@ -63,13 +63,6 @@ pub enum Expression {
         name: Token,
         value: Box<Expression>,
     },
-    Super {
-        keyword: Token,
-        method: Token,
-    },
-    This {
-        keyword: Token,
-    },
     Unary {
         operator: Token,
         right: Box<Expression>,
@@ -88,8 +81,6 @@ pub trait Visitor<T> {
     fn visit_literal_expression(&mut self, expr: &Expression) -> T;
     fn visit_logical_expression(&mut self, expr: &Expression) -> T;
     fn visit_set_expression(&mut self, expr: &Expression) -> T;
-    fn visit_super_expression(&mut self, expr: &Expression) -> T;
-    fn visit_this_expression(&mut self, expr: &Expression) -> T;
     fn visit_unary_expression(&mut self, expr: &Expression) -> T;
     fn visit_variable_expression(&mut self, expr: &Expression) -> T;
 }
@@ -121,11 +112,6 @@ impl Expression {
                 name: _,
                 value: _,
             } => visitor.visit_set_expression(self),
-            Expression::Super {
-                keyword: _,
-                method: _,
-            } => visitor.visit_super_expression(self),
-            Expression::This { keyword: _ } => visitor.visit_this_expression(self),
             Expression::Unary {
                 operator: _,
                 right: _,

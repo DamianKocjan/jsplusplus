@@ -1,16 +1,56 @@
 use std::any::Any;
-use std::collections::HashMap;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Ok, Result};
 
-use crate::parser::{
-    expression::{Expression, Visitor as ExpressionVisitor},
-    token::TokenType,
+use crate::{
+    parser::{
+        expression::{Expression, Visitor as ExpressionVisitor},
+        token::{Token, TokenType},
+    },
+    JSPlusPlus, RuntimeError,
 };
 
 pub struct Interpreter;
 
 impl Interpreter {
+    pub fn new() -> Interpreter {
+        Interpreter
+    }
+
+    pub fn interpret(&mut self, expression: &Expression) {
+        let value = self.evaluate(expression);
+
+        match value {
+            std::result::Result::Ok(value) => println!("{}", self.stringify(value)),
+            Err(error) => JSPlusPlus::error(0, &error.to_string()),
+        }
+    }
+
+    fn stringify(&self, value: Box<dyn Any>) -> String {
+        match value.downcast_ref::<f64>() {
+            Some(value) => {
+                let text = value.to_string();
+
+                if text.ends_with(".0") {
+                    text[..text.len() - 2].to_string()
+                } else {
+                    text
+                }
+            }
+            None => match value.downcast_ref::<bool>() {
+                Some(value) => value.to_string(),
+                None => match value.downcast_ref::<String>() {
+                    Some(value) => value.to_string(),
+                    None => "nil".to_string(),
+                },
+            },
+        }
+    }
+
+    fn evaluate(&mut self, expression: &Expression) -> Result<Box<dyn Any>> {
+        Ok(expression.accept(self))
+    }
+
     fn is_truthy(&self, value: &Box<dyn Any>) -> bool {
         match value.downcast_ref::<bool>() {
             Some(value) => *value,
@@ -25,28 +65,40 @@ impl Interpreter {
         }
     }
 
-    fn check_number_operand(&self, operator: &TokenType, operand: &Box<dyn Any>) {
+    fn check_number_operand(&self, operator: &Token, operand: &Box<dyn Any>) -> Result<()> {
         if operand.is::<f64>() {
-            return;
+            return Ok(());
         }
 
-        panic!("Operand must be a number. Got {:?} instead.", operator);
+        bail!(RuntimeError::new(
+            operator.clone(),
+            "Operand must be a number."
+        ));
     }
 
     fn check_number_operands(
         &self,
-        operator: &TokenType,
+        operator: &Token,
         left: &Box<dyn Any>,
         right: &Box<dyn Any>,
-    ) {
+    ) -> Result<()> {
         if left.is::<f64>() && right.is::<f64>() {
-            return;
+            return Ok(());
         }
 
-        panic!(
+        let message = format!(
             "Operands must be numbers. Got {:?} and {:?} instead.",
             left, right
         );
+
+        // Err(RuntimeError::new(
+        //     operator.clone(),
+        //     Into::<std::str::Split<'_, &str>>::into(
+        //         message.as_str().split("").into_iter().copied(),
+        //     )
+        //     .,
+        // ))
+        Ok(())
     }
 }
 
@@ -83,37 +135,49 @@ impl ExpressionVisitor<Box<dyn Any>> for Interpreter {
                         }
                     }
                     TokenType::Slash => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left / right)
                     }
                     TokenType::Star => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left * right)
                     }
                     TokenType::Greater => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left > right)
                     }
                     TokenType::GreaterEqual => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left >= right)
                     }
                     TokenType::Less => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left < right)
                     }
                     TokenType::LessEqual => {
-                        self.check_number_operands(&operator.token_type, &left, &right);
+                        if let Err(err) = self.check_number_operands(&operator, &left, &right) {
+                            panic!("{}", err);
+                        }
                         let left = left.downcast_ref::<f64>().unwrap();
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(left <= right)
@@ -157,14 +221,6 @@ impl ExpressionVisitor<Box<dyn Any>> for Interpreter {
         todo!()
     }
 
-    fn visit_super_expression(&mut self, expr: &Expression) -> Box<dyn Any> {
-        todo!()
-    }
-
-    fn visit_this_expression(&mut self, expr: &Expression) -> Box<dyn Any> {
-        todo!()
-    }
-
     fn visit_unary_expression(&mut self, expr: &Expression) -> Box<dyn Any> {
         match expr {
             Expression::Unary { operator, right } => {
@@ -172,7 +228,9 @@ impl ExpressionVisitor<Box<dyn Any>> for Interpreter {
 
                 match operator.token_type {
                     TokenType::Minus => {
-                        self.check_number_operand(&operator.token_type, &right);
+                        if let Err(err) = self.check_number_operand(&operator, &right) {
+                            panic!("{}", err);
+                        }
                         let right = right.downcast_ref::<f64>().unwrap();
                         Box::new(-right)
                     }

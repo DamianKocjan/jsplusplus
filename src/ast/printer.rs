@@ -237,26 +237,6 @@ impl ExpressionVisitor<String> for AstPrinter {
         }
     }
 
-    fn visit_super_expression(&mut self, expr: &Expression) -> String {
-        match expr {
-            Expression::Super { keyword: _, method } => {
-                self.parenthesize2("super", &[Box::new(Into::<OneOf>::into(method.clone()))])
-            }
-            _ => {
-                panic!("Expected Super expression");
-            }
-        }
-    }
-
-    fn visit_this_expression(&mut self, expr: &Expression) -> String {
-        match expr {
-            Expression::This { keyword: _ } => String::from("this"),
-            _ => {
-                panic!("Expected This expression");
-            }
-        }
-    }
-
     fn visit_unary_expression(&mut self, expr: &Expression) -> String {
         match expr {
             Expression::Unary { operator, right } => {
@@ -294,46 +274,6 @@ impl StatementVisitor<String> for AstPrinter {
             }
             _ => {
                 panic!("Expected block statement");
-            }
-        }
-    }
-
-    fn visit_class_statement(&mut self, stmt: &Statement) -> String {
-        match stmt {
-            Statement::Class {
-                name,
-                superclass,
-                methods,
-            } => {
-                let mut builder = String::new();
-                builder.push_str(format!("(class {} ", name.lexeme).as_str());
-
-                if superclass.is_some() {
-                    builder.push_str(&format!(
-                        " < {}",
-                        self.print_expression(superclass.as_ref().unwrap())
-                    ));
-                }
-
-                for method in methods {
-                    match method {
-                        Statement::Function {
-                            name: _,
-                            params: _,
-                            body: _,
-                        } => {
-                            builder.push_str(format!(" {}", self.print_statement(method)).as_str());
-                        }
-                        _ => {
-                            panic!("Expected function statement");
-                        }
-                    }
-                }
-
-                return builder;
-            }
-            _ => {
-                panic!("Expected class statement");
             }
         }
     }

@@ -47,9 +47,6 @@ impl Parser {
 
     fn declaration(&mut self) -> Option<Statement> {
         let mut get_stmt = || -> Result<Statement> {
-            if self._match(&[TokenType::Class]) {
-                return self.class_declaration();
-            }
             if self._match(&[TokenType::Function]) {
                 return self.function("function");
             }
@@ -68,33 +65,6 @@ impl Parser {
             return None;
         }
         Some(result.unwrap())
-    }
-
-    fn class_declaration(&mut self) -> Result<Statement> {
-        let name = self.consume(TokenType::Identifier, "Expect class name.")?;
-
-        let mut superclass: Option<Expression> = None;
-        if self._match(&[TokenType::Less]) {
-            self.consume(TokenType::Identifier, "Expect superclass name.")?;
-            superclass = Some(Expression::Variable {
-                name: self.previous(),
-            });
-        }
-
-        self.consume(TokenType::LeftBrace, "Expect '{' before class body.")?;
-
-        let mut methods = Vec::new();
-        while !self.check(TokenType::RightBrace) && !self.is_at_end() {
-            methods.push(self.function("method")?);
-        }
-
-        self.consume(TokenType::RightBrace, "Expect '}' after class body.")?;
-
-        Ok(Statement::Class {
-            name,
-            superclass,
-            methods,
-        })
     }
 
     fn statement(&mut self) -> Result<Statement> {
@@ -495,19 +465,6 @@ impl Parser {
             });
         }
 
-        if self._match(&[TokenType::Super]) {
-            let keyword = self.previous();
-            self.consume(TokenType::Dot, "Expect '.' after 'super'.")?;
-            let method = self.consume(TokenType::Identifier, "Expect superclass method name.")?;
-            return Ok(Expression::Super { keyword, method });
-        }
-
-        if self._match(&[TokenType::This]) {
-            return Ok(Expression::This {
-                keyword: self.previous(),
-            });
-        }
-
         if self._match(&[TokenType::Identifier]) {
             return Ok(Expression::Variable {
                 name: self.previous(),
@@ -584,8 +541,7 @@ impl Parser {
             }
 
             match self.peek().token_type {
-                TokenType::Class
-                | TokenType::Function
+                TokenType::Function
                 | TokenType::Let
                 | TokenType::Const
                 | TokenType::For

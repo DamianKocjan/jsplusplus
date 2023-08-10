@@ -6,12 +6,6 @@ pub enum Statement {
     Block {
         statements: Vec<Statement>,
     },
-    Class {
-        name: Token,
-        superclass: Option<Expression>,
-        // list of function statements
-        methods: Vec<Statement>,
-    },
     Expression {
         expression: Expression,
     },
@@ -48,7 +42,6 @@ pub enum Statement {
 
 pub trait Visitor<T> {
     fn visit_block_statement(&mut self, statement: &Statement) -> T;
-    fn visit_class_statement(&mut self, statement: &Statement) -> T;
     fn visit_expression_statement(&mut self, statement: &Statement) -> T;
     fn visit_function_statement(&mut self, statement: &Statement) -> T;
     fn visit_if_statement(&mut self, statement: &Statement) -> T;
@@ -63,11 +56,6 @@ impl Statement {
     pub fn accept<T>(&self, visitor: &mut impl Visitor<T>) -> T {
         match self {
             Statement::Block { statements: _ } => visitor.visit_block_statement(self),
-            Statement::Class {
-                name: _,
-                superclass: _,
-                methods: _,
-            } => visitor.visit_class_statement(self),
             Statement::Expression { expression: _ } => visitor.visit_expression_statement(self),
             Statement::Function {
                 name: _,

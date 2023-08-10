@@ -14,7 +14,6 @@ pub static KEYWORDS: Lazy<Mutex<HashMap<&str, TokenType>>> = Lazy::new(|| {
     let mut m: HashMap<&str, TokenType> = HashMap::new();
 
     m.insert("and", TokenType::And);
-    m.insert("class", TokenType::Class);
     m.insert("const", TokenType::Const);
     m.insert("else", TokenType::Else);
     m.insert("false", TokenType::False);
@@ -27,8 +26,6 @@ pub static KEYWORDS: Lazy<Mutex<HashMap<&str, TokenType>>> = Lazy::new(|| {
     m.insert("or", TokenType::Or);
     m.insert("print", TokenType::Print);
     m.insert("return", TokenType::Return);
-    m.insert("super", TokenType::Super);
-    m.insert("this", TokenType::This);
     m.insert("true", TokenType::True);
     m.insert("while", TokenType::While);
     Mutex::new(m)
