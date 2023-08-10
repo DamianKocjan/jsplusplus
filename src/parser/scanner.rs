@@ -225,3 +225,149 @@ impl Scanner {
         &self.tokens
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::parser::{scanner::Scanner, token::TokenType};
+
+    #[test]
+    fn test_scanner_variable() {
+        let expected_tokens = [
+            TokenType::Let,
+            TokenType::Equal,
+            TokenType::Number,
+            TokenType::Semicolon,
+            TokenType::EOF,
+        ];
+
+        let source = String::from("let = 1;");
+        let mut scanner = Scanner::new(source);
+        let tokens = scanner.scan_tokens();
+
+        for (i, token) in tokens.iter().enumerate() {
+            assert_eq!(token.token_type, expected_tokens[i]);
+        }
+
+        assert_eq!(tokens.len(), expected_tokens.len());
+    }
+
+    #[test]
+    fn test_scanner_variable_with_string() {
+        let expected_tokens = [
+            TokenType::Let,
+            TokenType::Equal,
+            TokenType::String,
+            TokenType::Semicolon,
+            TokenType::EOF,
+        ];
+
+        let source = String::from("let = \"hello\";");
+        let mut scanner = Scanner::new(source);
+        let tokens = scanner.scan_tokens();
+
+        for (i, token) in tokens.iter().enumerate() {
+            assert_eq!(token.token_type, expected_tokens[i]);
+        }
+
+        assert_eq!(tokens.len(), expected_tokens.len());
+    }
+
+    #[test]
+    fn test_scanner_function() {
+        let expected_tokens = [
+            TokenType::Function,
+            TokenType::Identifier,
+            TokenType::LeftParen,
+            TokenType::Identifier,
+            TokenType::Comma,
+            TokenType::Identifier,
+            TokenType::RightParen,
+            TokenType::LeftBrace,
+            TokenType::Return,
+            TokenType::Identifier,
+            TokenType::Plus,
+            TokenType::Identifier,
+            TokenType::Semicolon,
+            TokenType::RightBrace,
+            TokenType::EOF,
+        ];
+
+        let source = String::from("function add(a, b) { return a + b; }");
+        let mut scanner = Scanner::new(source);
+        let tokens = scanner.scan_tokens();
+
+        for (i, token) in tokens.iter().enumerate() {
+            assert_eq!(token.token_type, expected_tokens[i]);
+        }
+
+        assert_eq!(tokens.len(), expected_tokens.len());
+    }
+
+    #[test]
+    fn test_scanner_complex() {
+        let expected_tokens = [
+            TokenType::Let,
+            TokenType::Identifier,
+            TokenType::Equal,
+            TokenType::Number,
+            TokenType::Semicolon,
+            TokenType::Let,
+            TokenType::Identifier,
+            TokenType::Equal,
+            TokenType::Number,
+            TokenType::Semicolon,
+            TokenType::Let,
+            TokenType::Identifier,
+            TokenType::Equal,
+            TokenType::Identifier,
+            TokenType::Plus,
+            TokenType::Identifier,
+            TokenType::Semicolon,
+            TokenType::Function,
+            TokenType::Identifier,
+            TokenType::LeftParen,
+            TokenType::Identifier,
+            TokenType::Comma,
+            TokenType::Identifier,
+            TokenType::RightParen,
+            TokenType::LeftBrace,
+            TokenType::Return,
+            TokenType::Identifier,
+            TokenType::Plus,
+            TokenType::Identifier,
+            TokenType::Semicolon,
+            TokenType::RightBrace,
+            TokenType::Let,
+            TokenType::Identifier,
+            TokenType::Equal,
+            TokenType::Identifier,
+            TokenType::LeftParen,
+            TokenType::Identifier,
+            TokenType::Comma,
+            TokenType::Identifier,
+            TokenType::RightParen,
+            TokenType::Semicolon,
+            TokenType::EOF,
+        ];
+
+        let source = String::from(
+            "
+            let a = 1;
+            let b = 2;
+            let c = a + b;
+            function add(a, b) {
+                return a + b;
+            }
+            let d = add(a, b);
+            ",
+        );
+        let mut scanner = Scanner::new(source);
+        let tokens = scanner.scan_tokens();
+
+        for (i, token) in tokens.iter().enumerate() {
+            assert_eq!(token.token_type, expected_tokens[i]);
+        }
+
+        assert_eq!(tokens.len(), expected_tokens.len());
+    }
+}
